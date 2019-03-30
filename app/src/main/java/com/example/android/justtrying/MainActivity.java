@@ -1,40 +1,105 @@
 package com.example.android.justtrying;
 
+import android.content.Intent;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+
+public class MainActivity extends AppCompatActivity implements WordListAdapter.OnWordListener {
+
+
     private static final String TAG = "MainActivity";
     private static final String KEY_TITLE = "english";
     private static final String KEY_DESCRIPTION = "khasi";
-    //FirebaseApp.initializeApp(this);
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();;
-    private TextView textViewData;
-    private EditText editTextView;
+
+
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference translations = db.collection("translations");
     private DocumentReference noteRef = db.collection("translations").document("word1");
+
+
+    private TextView textViewData;
+    private EditText editTextView;
+    private RecyclerView viewDataBase;
+    private WordListAdapter wordListAdapter;
+    private List<Words> wordsList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        wordsList = new ArrayList<>();
+        wordListAdapter = new WordListAdapter(wordsList, this);
+
+
+
         textViewData = findViewById(R.id.text_data);
         editTextView = findViewById(R.id.word_to_search);
         Button b = findViewById(R.id.b1);
+        viewDataBase = (RecyclerView) findViewById(R.id.recycleList);
+
+        viewDataBase.setHasFixedSize(true);
+        viewDataBase.setLayoutManager(new LinearLayoutManager(this));
+        viewDataBase.setAdapter(wordListAdapter);
+
+
+
+
+
+
+        db.collection("translations").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.d(TAG, "Error: " + e.getMessage());
+                }
+
+                for(DocumentChange doc: queryDocumentSnapshots.getDocumentChanges()) {
+                    if(doc.getType()==DocumentChange.Type.ADDED) {
+                        Words words = doc.getDocument().toObject(Words.class);
+                        wordsList.add(words);
+
+                        wordListAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+
+        });
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         //String k;
 
         String wordToCheck = editTextView.getText().toString();
+
         translations.whereEqualTo("khasi",wordToCheck)
                 .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -70,5 +136,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG,e.toString());
             }
         });
+    }
+
+    @Override
+    public void onWordClick(int position, String name) {
+
+
+
+        Intent intent = new Intent(this, WordFound.class);
+        intent.putExtra("word", name);
+        startActivity(intent);
+
+        Log.d(TAG, "onWordClick: " + name );
+
+
     }
 }
