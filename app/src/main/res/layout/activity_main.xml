@@ -19,12 +19,11 @@
         android:selectAllOnFocus="true" />
 
     <Button
+        android:id="@+id/b1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Text"
-        android:id="@+id/b1"
         android:background="@color/colorPrimary"
-        />
+        android:text="Get Text" />
   <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
