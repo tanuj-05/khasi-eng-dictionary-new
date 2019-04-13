@@ -6,6 +6,10 @@ import android.os.Bundle;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,7 +24,7 @@ import android.widget.Toolbar;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ImageView wordSearch;
     private DrawerLayout mDrawerLayout;
@@ -68,11 +72,12 @@ public class MainActivity extends AppCompatActivity{
 
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-
-
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+        navigationView.setCheckedItem(R.id.id1);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -80,9 +85,45 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+
+
+        switch(menuItem.getItemId()) {
+            case R.id.id1:
+                Intent intent = new Intent(MainActivity.this, FavActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.id2:
+
+                Intent intentAlphabets = new Intent(MainActivity.this, AlphabetActivity.class);
+                startActivity(intentAlphabets);
+                break;
+            case R.id.id3:
+                Intent intentRecents = new Intent(MainActivity.this, AlphabetActivity.class);
+                startActivity(intentRecents);
+                break;
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true  ;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(mToggle.onOptionsItemSelected(item)){
+        if(mToggle.onOptionsItemSelected(item)) {
             return true;
         }
 

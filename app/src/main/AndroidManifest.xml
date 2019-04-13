@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SearchWord"></activity>
+        <activity android:name=".RecentsActivity"></activity>
+        <activity android:name=".AlphabetActivity" />
+        <activity android:name=".FavActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
