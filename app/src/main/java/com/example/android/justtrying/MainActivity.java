@@ -1,6 +1,7 @@
 package com.example.android.justtrying;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -10,26 +11,50 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toolbar;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity{
 
-
+    private ImageView wordSearch;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
     private static final String TAG = "MainActivity";
 
     private AdView mAdView;
-
-
+    ArrayList<String> khasiWords = new ArrayList<>();
+    ArrayList<String> englishWords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        wordSearch = findViewById(R.id.imageView2);
+        Intent i = getIntent();
+        khasiWords = i.getStringArrayListExtra("khasi_words");
+        englishWords = i.getStringArrayListExtra("english_words");
+        wordSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SearchWord.class);
+                intent.putStringArrayListExtra("khasi_words",khasiWords);
+                intent.putStringArrayListExtra("english_words",englishWords);
+                Log.i(TAG, "onSuccess in MainActivity: " + khasiWords.size());
+                Log.i(TAG, "First Khasi word in MainActivity " + khasiWords.get(0));
+                Log.i(TAG, "First English Word in Main Activity" + englishWords.get(0));
+                Log.i(TAG, "Last Khasi word in MainActivity " + khasiWords.get(khasiWords.size() - 1));
+                Log.i(TAG, "Last English Word in Main Activity" + englishWords.get(englishWords.size() - 1));
+                startActivity(intent);
+
+            }
+        });
         ActionBar actionBar = getSupportActionBar();
         //actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setElevation(0);

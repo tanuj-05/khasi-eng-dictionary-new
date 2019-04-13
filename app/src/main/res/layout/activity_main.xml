@@ -135,7 +135,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/imageView"
             app:layout_constraintVertical_bias="0.415"
-            app:srcCompat="@mipmap/search" />
+            app:srcCompat="@mipmap/search"
+            />
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
