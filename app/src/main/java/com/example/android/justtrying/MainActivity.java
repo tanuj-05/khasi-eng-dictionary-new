@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 
 import android.view.MenuItem;
+import android.widget.Toolbar;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -24,12 +25,13 @@ public class MainActivity extends AppCompatActivity{
     private AdView mAdView;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
+        //actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setElevation(0);
 
 
