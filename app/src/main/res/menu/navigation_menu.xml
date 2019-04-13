@@ -2,12 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/id1"
-        android:title="First Fragment"></item>
+        android:title="Favourites"></item>
 
     <item android:id="@+id/id2"
-        android:title="Second Fragment"></item>
+        android:title="Khasi Alphabets"></item>
 
     <item android:id="@+id/id3"
-        android:title="Third Fragment"></item>
+        android:title="Recents"></item>
+
+    <item android:id="@+id/id4"
+        android:title="Rate Us"></item>
 
 </menu>

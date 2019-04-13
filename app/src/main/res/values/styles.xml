@@ -6,11 +6,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/alef</item>
     </style>
 
     <style name="newTheme" parent="AppTheme" >
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimary">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/alef</item>
     </style>
 
 </resources>

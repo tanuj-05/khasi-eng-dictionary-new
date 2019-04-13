@@ -3,4 +3,13 @@
     <string name="favourites">favourites</string>
     <string name="open">open</string>
     <string name="close">close</string>
+
+
+    <!--Real ID for adMob-->
+    <!--ca-app-pub-3864929010566502~3801292561-->
+
+
+    <!--Test ID for adMob-->
+    <!--ca-app-pub-3940256099942544/6300978111-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>
