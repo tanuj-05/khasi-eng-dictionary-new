@@ -173,7 +173,8 @@
        android:layout_height="match_parent"
 
        app:menu="@menu/navigation_menu"
-       android:layout_gravity="start">
+       android:layout_gravity="start"
+       app:headerLayout="@layout/navigation_header">
 
 
 
