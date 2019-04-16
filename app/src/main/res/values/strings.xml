@@ -3,7 +3,7 @@
     <string name="favourites">favourites</string>
     <string name="open">open</string>
     <string name="close">close</string>
-
+    <string name="query_hint"><i>Search...</i></string>
 
     <!--Real ID for adMob-->
     <!--ca-app-pub-3864929010566502~3801292561-->
