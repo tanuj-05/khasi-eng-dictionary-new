@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intentAlphabets);
                 break;
             case R.id.id3:
-                Intent intentRecents = new Intent(MainActivity.this, Language.class);
-                startActivity(intentRecents);
+//                Intent intentRecents = new Intent(MainActivity.this, Language.class);
+//                startActivity(intentRecents);
                 break;
         }
 
