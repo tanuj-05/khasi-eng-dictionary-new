@@ -1,10 +1,9 @@
 package com.example.android.justtrying;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -20,11 +19,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class SearchWord extends AppCompatActivity {
+    ArrayList<String> khasiWords = new ArrayList<>();
+    ArrayList<String> englishWords = new ArrayList<>();
+    private TextView prompt;
     private RecyclerView mRecyclerView;
     private KhasiWordsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    ArrayList<String> khasiWords = new ArrayList<>();
-    ArrayList<String> englishWords = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,7 @@ public class SearchWord extends AppCompatActivity {
         Intent i = getIntent();
         khasiWords = i.getStringArrayListExtra("khasi_words");
         englishWords = i.getStringArrayListExtra("english_words");
+        prompt = findViewById(R.id.text_view_prompt);
         mRecyclerView = findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new KhasiWordsAdapter(khasiWords);
@@ -45,51 +47,46 @@ public class SearchWord extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search_view_menu,menu);
+        inflater.inflate(R.menu.search_view_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchItem.expandActionView();
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
-        EditText searchBox= searchView.findViewById (android.support.v7.appcompat.R.id.search_src_text);
-        searchBox.setTextColor(Color.BLACK);
-        searchBox.setHintTextColor(Color.BLACK);
-        searchBox.getLayoutParams().width = 32;
+        EditText searchBox = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchBox.requestFocus();//To make edit_text have focus on activity startup with keyboard open
+        searchBox.setTextColor(getResources().getColor(R.color.colorWord));
+        searchBox.setHintTextColor(getResources().getColor(R.color.colorWord));
         searchBox.setBackgroundResource(R.drawable.rounded_edittext);
         searchView.setIconifiedByDefault(false);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setQueryHint("Search..");
+        searchView.setQueryHint(getResources().getString(R.string.query_hint));
         int pixel = dpToPx(-22);
-        searchView.setPadding(pixel,0,0,0);
-        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-        View searchPlate = searchView.findViewById(searchPlateId);
-        if (searchPlate!=null) {
-            searchPlate.setBackgroundColor(Color.DKGRAY);
-            int searchTextId = searchPlate.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-            TextView searchText = searchPlate.findViewById(searchTextId);
-            if (searchText!=null) {
-                searchText.setTextColor(Color.WHITE);
-                searchText.setHintTextColor(Color.WHITE);
-            }
-        }
+        searchView.setPadding(pixel, 0, 0, 0);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
-                if(s.length() != 0){
+                String checkString = s.replaceAll("\\s+", "");
+                if (checkString.length() != 0) {
+                    prompt.setVisibility(View.GONE);
+                    mAdapter.getFilter().filter(s);
                     mRecyclerView.setVisibility(View.VISIBLE);
                 }
-                if(s.length() == 0){
+                if (checkString.length() == 0) {
+                    prompt.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
                 }
-                mAdapter.getFilter().filter(s);
+
                 return false;
             }
         });
         return true;
     }
+
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
