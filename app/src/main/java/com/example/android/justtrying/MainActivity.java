@@ -1,10 +1,19 @@
 package com.example.android.justtrying;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -19,27 +28,58 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    private static final String TAG = "MainActivity";
+    int randomNum, checkNum;
+    String khasi, currentWord;
+    ArrayList<String> khasiWords = new ArrayList<>();
+    ArrayList<String> englishWords = new ArrayList<>();
+    String exampleWords[] = {"yoyo", "huihui", "woohoo"};
+    private TextView wordOfTheDay;
     private ImageView wordSearch;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
-
-    private static final String TAG = "MainActivity";
-
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference khasiToEnglish = db.collection("kToE");
     private AdView mAdView;
-    ArrayList<String> khasiWords = new ArrayList<>();
-    ArrayList<String> englishWords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        wordOfTheDay = findViewById(R.id.textView5);
+        randomNum = 0;
+        checkNum = 0;
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Random r = new Random();
+                randomNum = r.nextInt(3);
+                if (randomNum == checkNum) {
+                    if (randomNum == 2) {
+                        randomNum -= 1;
+                    } else {
+                        randomNum += 1;
+                    }
+
+                }
+                checkNum = randomNum;
+                currentWord = exampleWords[randomNum];
+                wordOfTheDay.setText(currentWord);
+            }
+        };
+        timer.schedule(timerTask, 0, 10000);
         wordSearch = findViewById(R.id.imageView2);
         Intent i = getIntent();
         khasiWords = i.getStringArrayListExtra("khasi_words");
@@ -48,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SearchWord.class);
-                intent.putStringArrayListExtra("khasi_words",khasiWords);
-                intent.putStringArrayListExtra("english_words",englishWords);
+                intent.putStringArrayListExtra("khasi_words", khasiWords);
+                intent.putStringArrayListExtra("english_words", englishWords);
                 Log.i(TAG, "onSuccess in MainActivity: " + khasiWords.size());
                 Log.i(TAG, "First Khasi word in MainActivity " + khasiWords.get(0));
                 Log.i(TAG, "First English Word in Main Activity" + englishWords.get(0));
@@ -64,11 +104,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBar.setElevation(0);
 
 
-
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-
 
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -88,8 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
 
-
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.id1:
                 Intent intent = new Intent(MainActivity.this, FavActivity.class);
                 startActivity(intent);
@@ -106,13 +143,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true  ;
+        return true;
     }
 
     @Override
     public void onBackPressed() {
 
-        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -123,15 +160,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(mToggle.onOptionsItemSelected(item)) {
+        if (mToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 }
-
-
 
 
 //import android.support.v7.widget.LinearLayoutManager;

@@ -11,10 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".DisplayMeaning"></activity>
         <activity
             android:name=".Language"
             android:label="@string/title_activity_language"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SearchWord" />
         <activity android:name=".RecentsActivity" />
         <activity android:name=".FavActivity" />
