@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -91,14 +92,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch(menuItem.getItemId()) {
             case R.id.id1:
-                Intent intent = new Intent(MainActivity.this, FavActivity.class);
-                startActivity(intent);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MainActivity.this, FavActivity.class);
+                        startActivity(intent);
+                    }
+                },200);
+
+                mDrawerLayout.closeDrawer(GravityCompat.START);
                 break;
+
             case R.id.id2:
 
-                Intent intentAlphabets = new Intent(MainActivity.this, Language.class);
-                startActivity(intentAlphabets);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intentAlphabets = new Intent(MainActivity.this, Language.class);
+                        startActivity(intentAlphabets);
+                    }
+                },200);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
                 break;
+
             case R.id.id3:
 //                Intent intentRecents = new Intent(MainActivity.this, Language.class);
 //                startActivity(intentRecents);
