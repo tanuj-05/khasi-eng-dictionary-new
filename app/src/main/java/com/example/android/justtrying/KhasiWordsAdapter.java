@@ -15,6 +15,13 @@ import java.util.List;
 public class KhasiWordsAdapter extends RecyclerView.Adapter<KhasiWordsAdapter.KhasiWordViewHolder> implements Filterable {
     private ArrayList<String> mKhasiWords;
     private ArrayList<String> khasiWordsFull;
+    private OnItemClickListener mListener;
+    public interface OnItemClickListener{
+        void onItemClick(int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
     private Filter khasiWordsFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -51,7 +58,7 @@ public class KhasiWordsAdapter extends RecyclerView.Adapter<KhasiWordsAdapter.Kh
     @Override
     public KhasiWordViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.individual_word, viewGroup, false);
-        KhasiWordViewHolder khasiWordViewHolder = new KhasiWordViewHolder(v);
+        KhasiWordViewHolder khasiWordViewHolder = new KhasiWordViewHolder(v, mListener);
         return khasiWordViewHolder;
     }
 
@@ -74,9 +81,20 @@ public class KhasiWordsAdapter extends RecyclerView.Adapter<KhasiWordsAdapter.Kh
     public static class KhasiWordViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
 
-        public KhasiWordViewHolder(@NonNull View itemView) {
+        public KhasiWordViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.text_view);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

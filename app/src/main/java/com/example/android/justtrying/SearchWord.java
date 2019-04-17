@@ -43,6 +43,15 @@ public class SearchWord extends AppCompatActivity {
         mAdapter = new KhasiWordsAdapter(khasiWords);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(new KhasiWordsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                String a = khasiWords.get(position);
+                Intent intent = new Intent(SearchWord.this, DisplayMeaning.class);
+                intent.putExtra("khasi_word",a);
+                startActivity(intent);
+            }
+        });
         mRecyclerView.setVisibility(View.GONE);
         //Adding dividers between recyclerview items
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
