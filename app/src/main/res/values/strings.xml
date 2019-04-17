@@ -24,5 +24,6 @@
     <string name="title_activity_language">Language</string>
     <string name="Alphabets">Alphabets</string>
     <string name="About">About</string>
+    <string name="alphabetsPronounciation">Click on a letter to hear it\'s pronounciation</string>
 
 </resources>

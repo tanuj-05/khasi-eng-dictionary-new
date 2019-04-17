@@ -31,6 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         LoadData loadData = new LoadData();
         loadData.start();
 
+
     }
 
     class LoadData extends Thread {
