@@ -2,7 +2,6 @@ package com.example.android.justtrying;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
@@ -28,7 +27,9 @@ import java.util.ArrayList;
 
 public class DisplayMeaning extends AppCompatActivity implements View.OnClickListener {
     String englishMeaning;
-    String khasiWord;
+    String khasiMeaning;
+    String word;
+    //String khasiWord;
     private int stateFavButton = 0;
     private static int checkButStatus = 0;
     private ArrayList<String> items;
@@ -38,6 +39,8 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
     private TextView textViewMeaning;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference khasiToEnglish = db.collection("translations");
+    private CollectionReference englishToKhasi = db.collection("englishToKhasi");
+    private int switchCheck;
     private ImageButton mBut;
 
     private FloatingActionButton mFAB;
@@ -56,16 +59,16 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
         //Share Action provider
         mFAB = findViewById(R.id.floatingActionButton);
 
-
         //Fav button
-        mBut = findViewById(R.id.favButton);
+        mBut =  findViewById(R.id.favButton);
 
         Intent i = getIntent();
-        khasiWord = i.getStringExtra("khasi_word");
+        word = i.getStringExtra("word");
+        switchCheck = i.getIntExtra("check_switch",0);
         textViewWord = findViewById(R.id.text_view_word);
+        textViewWord.setText(word);
         textViewWord2 = findViewById(R.id.text_view_word2);
-        textViewWord.setText(khasiWord);
-        textViewWord2.setText(khasiWord);
+        textViewWord2.setText(word);
         textViewMeaning = findViewById(R.id.text_view_meaning);
         db.disableNetwork()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -73,22 +76,42 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<Void> task) {
                         // Do offline things
                         // ...
-                        khasiToEnglish.whereEqualTo("khasi", khasiWord)
-                                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
-                                    KhasiToEnglish khasiToEnglish = queryDocumentSnapshot.toObject(KhasiToEnglish.class);
-                                    englishMeaning = khasiToEnglish.getEnglish();
-                                    textViewMeaning.setText(englishMeaning);
+                        if (switchCheck == 0){
+                            khasiToEnglish.whereEqualTo("khasi", word)
+                                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                                        KhasiToEnglish khasiToEnglish = queryDocumentSnapshot.toObject(KhasiToEnglish.class);
+                                        englishMeaning = khasiToEnglish.getEnglish();
+                                        textViewMeaning.setText(englishMeaning);
+                                    }
                                 }
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(DisplayMeaning.this, "Error!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(DisplayMeaning.this, "Error while fetching English meaning!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                                    englishToKhasi.whereEqualTo("english",word)
+                                            .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                                KhasiToEnglish khasiToEnglish = documentSnapshot.toObject(KhasiToEnglish.class);
+                                                khasiMeaning = khasiToEnglish.getKhasi();
+                                                textViewMeaning.setText(khasiMeaning);
+                                            }
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(DisplayMeaning.this, "Error while fetching Khasi Meaning!!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+
                     }
                 });
 

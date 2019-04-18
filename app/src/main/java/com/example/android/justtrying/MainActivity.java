@@ -28,7 +28,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -42,8 +44,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
     int randomNum, checkNum;
     String khasi, currentWord;
+    private int checkSwitch;
     ArrayList<String> khasiWords = new ArrayList<>();
+    ArrayList<String> englishMeanings = new ArrayList<>();
     ArrayList<String> englishWords = new ArrayList<>();
+    ArrayList<String> khasiMeanings = new ArrayList<>();
     String exampleWords[] = {"yoyo", "huihui", "woohoo"};
     private TextView wordOfTheDay;
     private ImageView wordSearch;
@@ -52,12 +57,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference khasiToEnglish = db.collection("kToE");
     private AdView mAdView;
-
+    private Switch aSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        aSwitch = findViewById(R.id.switch1);
+        Intent i = getIntent();
+        khasiWords = i.getStringArrayListExtra("khasi_words");
+        englishMeanings = i.getStringArrayListExtra("english_meanings");
+        englishWords = i.getStringArrayListExtra("english_words");
+        khasiMeanings = i.getStringArrayListExtra("khasi_meanings");
         wordOfTheDay = findViewById(R.id.textView5);
         randomNum = 0;
         checkNum = 0;
@@ -82,22 +92,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
         timer.schedule(timerTask, 0, 10000);
         wordSearch = findViewById(R.id.imageView2);
-        Intent i = getIntent();
-        khasiWords = i.getStringArrayListExtra("khasi_words");
-        englishWords = i.getStringArrayListExtra("english_words");
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    checkSwitch = 1;
+                }else {
+                    checkSwitch = 0;
+                }
+            }
+        });
         wordSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SearchWord.class);
                 intent.putStringArrayListExtra("khasi_words", khasiWords);
+                intent.putStringArrayListExtra("english_meanings", englishMeanings);
                 intent.putStringArrayListExtra("english_words", englishWords);
-                Log.i(TAG, "onSuccess in MainActivity: " + khasiWords.size());
+                intent.putStringArrayListExtra("khasi_meanings", khasiMeanings);
+                intent.putExtra("switch_check",checkSwitch);
+                Log.i(TAG, "Size of Khasi words in MainActivity: " + khasiWords.size());
+                Log.i(TAG, "Size of englishMeanings in MainActivity: " + englishMeanings.size());
                 Log.i(TAG, "First Khasi word in MainActivity " + khasiWords.get(0));
-                Log.i(TAG, "First English Word in Main Activity" + englishWords.get(0));
+                Log.i(TAG, "First English Meaning in Main Activity" + englishMeanings.get(0));
                 Log.i(TAG, "Last Khasi word in MainActivity " + khasiWords.get(khasiWords.size() - 1));
-                Log.i(TAG, "Last English Word in Main Activity" + englishWords.get(englishWords.size() - 1));
+                Log.i(TAG, "Last English Word in Main Activity" + englishMeanings.get(englishMeanings.size() - 1));
+                Log.i(TAG, "Size of English words in MainActivity: " + englishWords.size());
+                Log.i(TAG, "Size of khasiMeanings in MainActivity: " + khasiMeanings.size());
+                Log.i(TAG, "First English word in MainActivity " + englishWords.get(0));
+                Log.i(TAG, "First Khasi Meaning in Main Activity" + khasiMeanings.get(0));
+                Log.i(TAG, "Last English word in MainActivity " + englishWords.get(englishWords.size() - 1));
+                Log.i(TAG, "Last Khasi Meaning in Main Activity" + khasiMeanings.get(khasiMeanings.size() - 1));
                 startActivity(intent);
-
             }
         });
         ActionBar actionBar = getSupportActionBar();
