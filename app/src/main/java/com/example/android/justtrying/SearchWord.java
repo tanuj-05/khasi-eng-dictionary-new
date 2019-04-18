@@ -21,13 +21,15 @@ import java.util.ArrayList;
 
 public class SearchWord extends AppCompatActivity {
     ArrayList<String> khasiWords = new ArrayList<>();
+    ArrayList<String> englishMeanings = new ArrayList<>();
     ArrayList<String> englishWords = new ArrayList<>();
+    ArrayList<String> khasiMeanings = new ArrayList<>();
     private TextView prompt;
     private RecyclerView mRecyclerView;
     private KhasiWordsAdapter mAdapter;
    // private RecyclerView.LayoutManager mLayoutManager;
    private LinearLayoutManager mLayoutManager;
-
+    private int checkSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,19 +38,32 @@ public class SearchWord extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         Intent i = getIntent();
         khasiWords = i.getStringArrayListExtra("khasi_words");
+        englishMeanings = i.getStringArrayListExtra("english_meanings");
         englishWords = i.getStringArrayListExtra("english_words");
+        khasiMeanings = i.getStringArrayListExtra("khasi_meanings");
+        checkSwitch = i.getIntExtra("switch_check",0);
         prompt = findViewById(R.id.text_view_prompt);
         mRecyclerView = findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new KhasiWordsAdapter(khasiWords);
+        if (checkSwitch == 0) {
+            mAdapter = new KhasiWordsAdapter(khasiWords);
+        }else {
+            mAdapter = new KhasiWordsAdapter(englishWords);
+        }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new KhasiWordsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                String a = khasiWords.get(position);
+                String wordSelected;
+                if (checkSwitch == 0) {
+                    wordSelected = khasiWords.get(position);
+                }else {
+                    wordSelected = englishWords.get(position);
+                }
                 Intent intent = new Intent(SearchWord.this, DisplayMeaning.class);
-                intent.putExtra("khasi_word",a);
+                intent.putExtra("word",wordSelected);
+                intent.putExtra("check_switch",checkSwitch);
                 startActivity(intent);
             }
         });
