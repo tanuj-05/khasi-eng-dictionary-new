@@ -91,6 +91,7 @@
         android:layout_marginBottom="24dp"
         android:clickable="true"
         android:focusable="true"
+        android:src="@mipmap/share"
         android:visibility="visible"
         app:backgroundTint="@color/colorCard"
         app:elevation="20dp"
