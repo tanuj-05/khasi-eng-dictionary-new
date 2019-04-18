@@ -7,7 +7,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ShareActionProvider;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class DisplayMeaning extends AppCompatActivity {
     private TextView textViewMeaning;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference khasiToEnglish = db.collection("translations");
+    private ImageButton mBut;
 
     private FloatingActionButton mFAB;
 
@@ -44,6 +46,9 @@ public class DisplayMeaning extends AppCompatActivity {
 
         //Share Action provider
         mFAB = findViewById(R.id.floatingActionButton);
+
+        //Fav button
+        mBut =  findViewById(R.id.favButton);
 
         Intent i = getIntent();
         khasiWord = i.getStringExtra("khasi_word");
@@ -89,6 +94,14 @@ public class DisplayMeaning extends AppCompatActivity {
                 intent.putExtra(Intent.EXTRA_SUBJECT,"Khasi Dictionary");
 
                 startActivity(Intent.createChooser(intent,"Share the meaning with..."));
+            }
+        });
+
+
+        mBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
             }
         });
 

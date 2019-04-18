@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/id1"
             android:title="Favourites"
-            android:icon="@mipmap/star"></item>
+            android:icon="@mipmap/baseline_star_black_48"></item>
 
         <item android:id="@+id/id2"
             android:title="Khasi Alphabets"
