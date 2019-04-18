@@ -6,4 +6,5 @@
     <color name = "colorCard">#1B998B</color>
     <color name = "colorText">#FFFFFF</color>
     <color name="colorWord">#707070</color>
+    <color name="favSelected">#247ba0</color>
 </resources>

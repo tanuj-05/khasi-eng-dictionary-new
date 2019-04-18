@@ -1,12 +1,15 @@
 package com.example.android.justtrying;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -21,9 +24,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class DisplayMeaning extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class DisplayMeaning extends AppCompatActivity implements View.OnClickListener {
     String englishMeaning;
     String khasiWord;
+    private int stateFavButton = 0;
+    private static int checkButStatus = 0;
+    private ArrayList<String> items;
+    private ArrayAdapter<String> adapter;
     private TextView textViewWord;
     private TextView textViewWord2;
     private TextView textViewMeaning;
@@ -37,7 +46,7 @@ public class DisplayMeaning extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        
+
         //Action Bar settings
         ActionBar actionBar = getSupportActionBar();
         actionBar.setElevation(0);
@@ -47,8 +56,9 @@ public class DisplayMeaning extends AppCompatActivity {
         //Share Action provider
         mFAB = findViewById(R.id.floatingActionButton);
 
+
         //Fav button
-        mBut =  findViewById(R.id.favButton);
+        mBut = findViewById(R.id.favButton);
 
         Intent i = getIntent();
         khasiWord = i.getStringExtra("khasi_word");
@@ -82,6 +92,9 @@ public class DisplayMeaning extends AppCompatActivity {
                     }
                 });
 
+
+        mBut.setOnClickListener(this);
+
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,24 +103,59 @@ public class DisplayMeaning extends AppCompatActivity {
                 intent.setType("text/plain");
                 String word = textViewWord.getText().toString();
                 String meaning = textViewMeaning.getText().toString();
-                intent.putExtra(Intent.EXTRA_TEXT,"Word: "+word + "\n" + "Meaning: " + meaning + "\n\n\n" + "Yours truly\nKhasi Dictioanry");
-                intent.putExtra(Intent.EXTRA_SUBJECT,"Khasi Dictionary");
+                intent.putExtra(Intent.EXTRA_TEXT, "Word: " + word + "\n" + "Meaning: " + meaning + "\n\n\n" + "Yours truly\nKhasi Dictioanry");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Khasi Dictionary");
 
-                startActivity(Intent.createChooser(intent,"Share the meaning with..."));
+                startActivity(Intent.createChooser(intent, "Share the meaning with..."));
             }
         });
 
+        checkButStatus = checkDb(textViewWord.getText().toString());
 
-        mBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                
-            }
-        });
+        if(checkButStatus == 1)
+        {
+            mBut.setColorFilter(getResources().getColor(R.color.favSelected));
+            stateFavButton = 1;
+        }
+
+        else{
+            mBut.setColorFilter(getResources().getColor(R.color.colorText));
+        }
 
     }
 
 
+    @Override
+    public void onClick(View view) {
+        String word = textViewWord.getText().toString();
+
+        if (stateFavButton == 0 ) {
+            stateFavButton = 1;
+            mBut.setColorFilter(getResources().getColor(R.color.favSelected));
+            Toast.makeText(DisplayMeaning.this, "Word added to Favourites!", Toast.LENGTH_SHORT).show();
+            FileHelperFavourite.writeData(word, this);
+        } else {
+            stateFavButton = 0;
+            mBut.setColorFilter(getResources().getColor(R.color.colorText));
+            //mBut.setEnabled(false);
+            //FileHelperFavourite.flushEverything(this);
+            Toast.makeText(DisplayMeaning.this, "Word Removed from Favourites!", Toast.LENGTH_SHORT).show();
+            FileHelperFavourite.removeData(word,this);
+        }
+    }
+
+
+    public int checkDb(String word) {
+
+        int check = FileHelperFavourite.check(word,this);
+
+        if(check == 1) {
+            return 1;
+        }
+        else
+            return 0;
+
+    }
 
 
 
