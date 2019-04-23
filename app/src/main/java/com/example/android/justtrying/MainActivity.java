@@ -50,18 +50,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArrayList<String> englishWords = new ArrayList<>();
     ArrayList<String> khasiMeanings = new ArrayList<>();
     String exampleWords[] = {"yoyo", "huihui", "woohoo"};
+
     private TextView wordOfTheDay;
     private ImageView wordSearch;
+
+    //Declaration of Navigation Drawer variables
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+
+    //Declaration of Database variables
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference khasiToEnglish = db.collection("kToE");
+
     private AdView mAdView;
     private Switch aSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         aSwitch = findViewById(R.id.switch1);
         Intent i = getIntent();
         khasiWords = i.getStringArrayListExtra("khasi_words");
@@ -126,11 +134,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         });
+
+
+        //used to set action bar preferances
         ActionBar actionBar = getSupportActionBar();
-        //actionBar.setDisplayShowTitleEnabled(false);
+
+        // used to make a blend between action bar and image view below to appear as one UI element
         actionBar.setElevation(0);
 
 
+        // Defining ad view and loading it into the ad view
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -138,20 +151,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        //Used to create an OnClick Listener for the menu options in the navigation drawer.
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Used to open and close the navigation drawer with use from the action bar
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+
+        //to make sure that Action Bar toogle happens (listener) when the drawer is activated/in focus
         mDrawerLayout.addDrawerListener(mToggle);
+
+        //to ensure the state of the drawer is synced with the drawer layout (mDrawerLayout)
         mToggle.syncState();
+
+        //used to highlight the first item in the drawer (default case)
         navigationView.setCheckedItem(R.id.id1);
 
+        //used to display the menu icon on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
     }
 
+
+    /*
+
+    Function that listens for events in navigation items (menu items) and passes the requests to the UI Thread.
+
+    The use of Handlers help for background threads to communicate with the main thread (UI thread).
+
+    A delay of 200 mili-seconds to ensure a lag free close of the Nav drawer and then the message/runnable is executed.
+     */
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
 
         switch (menuItem.getItemId()) {
             case R.id.id1:
@@ -160,11 +193,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         Intent intent = new Intent(MainActivity.this, FavActivity.class);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
                         startActivity(intent);
                     }
                 },200);
 
-                mDrawerLayout.closeDrawer(GravityCompat.START);
                 break;
 
             case R.id.id2:
@@ -173,21 +206,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         Intent intentAlphabets = new Intent(MainActivity.this, Language.class);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
                         startActivity(intentAlphabets);
                     }
                 },200);
-                mDrawerLayout.closeDrawer(GravityCompat.START);
                 break;
 
             case R.id.id3:
-//                Intent intentRecents = new Intent(MainActivity.this, Language.class);
-//                startActivity(intentRecents);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intentRecents = new Intent(MainActivity.this, RecentsActivity.class);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                        startActivity(intentRecents);
+                    }
+                },200);
+
                 break;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    /*
+
+    Function used to ensure that when the back button is pressed the Main Activity layout is seen.
+
+    Makes sure that the app does not close using the back button.
+
+     */
 
     @Override
     public void onBackPressed() {
@@ -200,6 +250,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
+    /*
+
+    Function used to handle menu item presses by returning true (By default this method is called on the menu)
+
+    if item is not selected, we call the superclass implementation of onOptionsItemSelected.
+    (so that the compiler knows that there is no user define menu item)
+
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -210,152 +269,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 }
-
-
-//import android.support.v7.widget.LinearLayoutManager;
-//        import android.support.v7.widget.RecyclerView;
-//        import android.util.Log;
-//import android.view.View;
-//
-//        import android.content.Intent;
-//        import android.widget.Button;
-//        import android.widget.EditText;
-//
-//        import android.widget.TextView;
-//        import android.widget.Toast;
-//
-//
-//        import com.google.android.gms.tasks.OnFailureListener;
-//        import com.google.android.gms.tasks.OnSuccessListener;
-//
-//        import com.google.firebase.firestore.CollectionReference;
-//        import com.google.firebase.firestore.DocumentChange;
-//        import com.google.firebase.firestore.DocumentReference;
-//        import com.google.firebase.firestore.EventListener;
-//        import com.google.firebase.firestore.FirebaseFirestore;
-//        import com.google.firebase.firestore.FirebaseFirestoreException;
-//        import com.google.firebase.firestore.QueryDocumentSnapshot;
-//        import com.google.firebase.firestore.QuerySnapshot;
-//
-//        import java.util.ArrayList;
-//        import java.util.List;
-//
-//        import javax.annotation.Nullable;
-//import android.support.annotation.NonNull;
-//public class MainActivity extends AppCompatActivity implements WordListAdapter.OnWordListener {
-//
-//
-//    private static final String TAG = "MainActivity";
-//    private static final String KEY_TITLE = "english";
-//    private static final String KEY_DESCRIPTION = "khasi";
-//
-//
-//
-//    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-//    private CollectionReference translations = db.collection("translations");
-//    private DocumentReference noteRef = db.collection("translations").document("word1");
-//
-//
-//    private TextView textViewData;
-//    private EditText editTextView;
-//    private RecyclerView viewDataBase;
-//    private WordListAdapter wordListAdapter;
-//    private List<Words> wordsList;
-//
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        wordsList = new ArrayList<>();
-//        wordListAdapter = new WordListAdapter(wordsList, this);
-//
-//
-//
-//        textViewData = findViewById(R.id.text_data);
-//        editTextView = findViewById(R.id.word_to_search);
-//        Button b = findViewById(R.id.b1);
-//        viewDataBase = (RecyclerView) findViewById(R.id.recycleList);
-//
-//        viewDataBase.setHasFixedSize(true);
-//        viewDataBase.setLayoutManager(new LinearLayoutManager(this));
-//        viewDataBase.setAdapter(wordListAdapter);
-//
-//
-//
-//
-//
-//
-//        db.collection("translations").addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if(e != null) {
-//                    Log.d(TAG, "Error: " + e.getMessage());
-//                }
-//
-//                for(DocumentChange doc: queryDocumentSnapshots.getDocumentChanges()) {
-//                    if(doc.getType()==DocumentChange.Type.ADDED) {
-//                        Words words = doc.getDocument().toObject(Words.class);
-//                        wordsList.add(words);
-//
-//                        wordListAdapter.notifyDataSetChanged();
-//                    }
-//                }
-//            }
-//
-//
-//        });
-//
-//        b.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                load(v);
-//            }
-//        });
-//    }
-//    public void load(View v){
-//        //String k;
-//
-//        String wordToCheck = editTextView.getText().toString();
-//
-//        translations.whereEqualTo("khasi",wordToCheck)
-//                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//            @Override
-//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//
-//                int count = 0;
-//                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-//                    String khasi = documentSnapshot.getString(KEY_DESCRIPTION);
-//                    String english = documentSnapshot.getString(KEY_TITLE);
-//                    count++;
-//                    textViewData.setText("Khasi:" + khasi + "\nEnglish: " + english);
-//                }
-//                //count == 0 will signify that the word we're searching fr isn't present in the database
-//                if(count == 0){
-//                    Toast.makeText(MainActivity.this, "No such word in database", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
-//                Log.d(TAG,e.toString());
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void onWordClick(int position, String name) {
-//
-//
-//
-//        Intent intent = new Intent(this, WordFound.class);
-//        intent.putExtra("word", name);
-//        startActivity(intent);
-//
-//        Log.d(TAG, "onWordClick: " + name );
-//
-//
-//    }
-//}

@@ -10,9 +10,13 @@ import java.util.ArrayList;
 public class FavActivity extends AppCompatActivity {
 
 
+
     private ArrayList<String> items;
+
     private ArrayAdapter<String> adapter;
+
     private ListView listView;
+
     private String item;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +25,7 @@ public class FavActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.listforFav);
 
-        items = FileHelperFavourite.readData(this);
+        items = FileHelperFavourite.readDataFav(this);
 
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,items);
 

@@ -2,6 +2,8 @@ package com.example.android.justtrying;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -16,11 +18,12 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.support.constraint.Constraints.TAG;
 
 public class FileHelperFavourite {
 
     private static final String FILENAME = "favinfo.dat";
-    private static final String FILENAME2 = "favinfo.dat";
+    private static final String FILENAME2 = "recentsinfo.dat";
 
 //    public static void writeData(ArrayList<String> items, Context context) {
 //        try{
@@ -55,13 +58,78 @@ public class FileHelperFavourite {
 //    }
 
 
-    public static void writeData(String textToAdd, Context context) {
+    public static void writeDataRecents(String textToAdd, Context context) {
+
+        FileOutputStream fos = null;
+        try {
+            fos = context.openFileOutput(FILENAME2,Context.MODE_APPEND);
+            fos.write(textToAdd.getBytes());
+            fos.write("\n".getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    public static ArrayList<String> readDataRecents(Context context) {
+        FileInputStream fis = null;
+
+        ArrayList<String> items = new ArrayList<String>();
+
+        try {
+            fis = context.openFileInput(FILENAME2);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            String passText;
+
+
+            while( (text = br.readLine()) != null) {
+                sb.append(text);
+                passText = sb.toString();
+                items.add(passText);
+                sb.delete(0,sb.length());
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(fis!=null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return items;
+
+    }
+
+
+
+    public static void writeDataFav(String textToAdd, Context context) {
 
         FileOutputStream fos = null;
         try {
             fos = context.openFileOutput(FILENAME,Context.MODE_APPEND);
-            fos.write("\n".getBytes());
             fos.write(textToAdd.getBytes());
+            fos.write("\n".getBytes());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -79,7 +147,7 @@ public class FileHelperFavourite {
     }
 
 
-    public static ArrayList<String> readData(Context context) {
+    public static ArrayList<String> readDataFav(Context context) {
         FileInputStream fis = null;
 
         ArrayList<String> items = new ArrayList<String>();
@@ -124,7 +192,10 @@ public class FileHelperFavourite {
 
         FileInputStream fis = null;
         FileOutputStream fos = null;
-        String passText;
+
+        String passText = null;
+        int size,i;
+        ArrayList<String> newFileFav = new ArrayList<>();
 
         try {
             fis = context.openFileInput(FILENAME);
@@ -137,27 +208,34 @@ public class FileHelperFavourite {
 
 
             while( (text = br.readLine()) != null) {
-                sb.append(text).append("\n");
+                sb.append(text);
                 passText = sb.toString();
+
                 if(passText.equals(textToAdd)) {
-                    Toast.makeText(context, "FOUND!", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "removeData: inside check condition ");
                     sb.delete(0,sb.length());
+                    passText = null;
+                    //Toast.makeText(context, "FOUND!", Toast.LENGTH_SHORT).show();
                     continue;
                 }
-                sb.append(text).append("\n");
-                newText = sb.toString();
+                //sb.append(text).append("\n");
+                if(passText == null)
+                    continue;
+                else
+                    newFileFav.add(passText +"\n");
+
+                sb.delete(0,sb.length());
             }
 
-            File file = new File(FILENAME);
-            file.delete();
 
 
-//            fos = context.openFileOutput(FILENAME,0);
-//
-//            fos = context.openFileOutput(FILENAME,MODE_PRIVATE);
-//            fos.write(newText.getBytes());
+            fos = context.openFileOutput(FILENAME,Context.MODE_PRIVATE);
 
-
+            size = newFileFav.size();
+            for(i= 0; i< size; i++) {
+                passText = newFileFav.get(i);
+                fos.write(passText.getBytes());
+            }
 
 
         } catch (FileNotFoundException e) {

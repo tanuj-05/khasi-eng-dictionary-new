@@ -64,6 +64,7 @@ public class SearchWord extends AppCompatActivity {
                 Intent intent = new Intent(SearchWord.this, DisplayMeaning.class);
                 intent.putExtra("word",wordSelected);
                 intent.putExtra("check_switch",checkSwitch);
+                FileHelperFavourite.writeDataRecents(wordSelected,SearchWord.this);
                 startActivity(intent);
             }
         });

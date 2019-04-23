@@ -60,7 +60,7 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
         mFAB = findViewById(R.id.floatingActionButton);
 
         //Fav button
-        mBut =  findViewById(R.id.favButton);
+        mBut = findViewById(R.id.favButton);
 
         Intent i = getIntent();
         word = i.getStringExtra("word");
@@ -156,7 +156,7 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
             stateFavButton = 1;
             mBut.setColorFilter(getResources().getColor(R.color.favSelected));
             Toast.makeText(DisplayMeaning.this, "Word added to Favourites!", Toast.LENGTH_SHORT).show();
-            FileHelperFavourite.writeData(word, this);
+            FileHelperFavourite.writeDataFav(word, this);
         } else {
             stateFavButton = 0;
             mBut.setColorFilter(getResources().getColor(R.color.colorText));
