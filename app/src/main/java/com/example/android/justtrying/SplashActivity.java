@@ -91,10 +91,10 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         private void loadingDone() {
-            Log.i(TAG, "first item in khasiWords is:" + khasiWords.get(0));
-            Log.i(TAG, "first item in englishMeanings is:" + englishMeanings.get(0));
-            Log.i(TAG, "first item in englishWords is:" + englishWords.get(0));
-            Log.i(TAG, "first item in khasiMeanings is:" + khasiMeanings.get(0));
+//            Log.i(TAG, "first item in khasiWords is:" + khasiWords.get(0));
+//            Log.i(TAG, "first item in englishMeanings is:" + englishMeanings.get(0));
+//            Log.i(TAG, "first item in englishWords is:" + englishWords.get(0));
+//            Log.i(TAG, "first item in khasiMeanings is:" + khasiMeanings.get(0));
             Intent i = new Intent(SplashActivity.this, MainActivity.class);
             i.putStringArrayListExtra("khasi_words", khasiWords);
             i.putStringArrayListExtra("english_meanings", englishMeanings);

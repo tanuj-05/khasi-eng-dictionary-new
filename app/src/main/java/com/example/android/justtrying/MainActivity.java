@@ -84,7 +84,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 checkNum = randomNum;
                 currentWord = exampleWords[randomNum];
-                wordOfTheDay.setText(currentWord);
+
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        // Stuff that updates the UI
+                        wordOfTheDay.setText(currentWord);
+                    }
+                });
+
             }
         };
         timer.schedule(timerTask, 0, 10000);
@@ -257,4 +267,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
