@@ -49,6 +49,7 @@
                 android:layout_marginTop="80dp"
                 android:fontFamily="@font/alef"
                 android:gravity="center"
+                android:textSize="25sp"
                 android:text="wordOfTheDay" />
 
 
