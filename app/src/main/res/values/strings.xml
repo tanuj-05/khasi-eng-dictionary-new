@@ -18,7 +18,7 @@
 
     <!--Test ID for adMob-->
     <!--ca-app-pub-3940256099942544/6300978111-->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3864929010566502~3801292561</string>
     <string name="source">Source:</string>
     <string name="title_activity_alphabet">AlphabetActivity</string>
     <string name="title_activity_language">Language</string>
