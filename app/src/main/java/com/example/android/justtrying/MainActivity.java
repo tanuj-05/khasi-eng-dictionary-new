@@ -1,9 +1,15 @@
 package com.example.android.justtrying;
 
+import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.gms.ads.AdRequest;
@@ -42,15 +48,14 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
-    int randomNum, checkNum;
-    String khasi, currentWord;
     private int checkSwitch;
+
+    //Declaration of ArrayLists that will receive the data from Splash Activity
     ArrayList<String> khasiWords = new ArrayList<>();
     ArrayList<String> englishMeanings = new ArrayList<>();
     ArrayList<String> englishWords = new ArrayList<>();
     ArrayList<String> khasiMeanings = new ArrayList<>();
     String exampleWords[] = {"yoyo", "huihui", "woohoo"};
-
     private TextView wordOfTheDay;
     private ImageView wordSearch;
 
@@ -66,39 +71,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Switch aSwitch;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences("prefs",MODE_PRIVATE);
+        int wordIndex = sharedPreferences.getInt("wordIndex",0);
+        wordOfTheDay.setText(khasiWords.get(wordIndex));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         aSwitch = findViewById(R.id.switch1);
         Intent i = getIntent();
+        //Retrieving the array lists from splash activity
         khasiWords = i.getStringArrayListExtra("khasi_words");
         englishMeanings = i.getStringArrayListExtra("english_meanings");
         englishWords = i.getStringArrayListExtra("english_words");
         khasiMeanings = i.getStringArrayListExtra("khasi_meanings");
+        db.disableNetwork();
+        SharedPreferences sharedPreferences = getSharedPreferences("prefs",MODE_PRIVATE);
+        boolean firstStart = sharedPreferences.getBoolean("firstStart",true);
+        //Retrieving random number from shared preference prefs
+        //This number will change everyday to generate a unique word
+        int wordIndex = sharedPreferences.getInt("wordIndex",0);
+        //Setting alarm for word Of the Day on first app start
+        if (firstStart) {
+            setAlarm();
+        }
         wordOfTheDay = findViewById(R.id.textView5);
-        randomNum = 0;
-        checkNum = 0;
-        Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
+        wordOfTheDay.setText(khasiWords.get(wordIndex));
+        wordOfTheDay.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                Random r = new Random();
-                randomNum = r.nextInt(3);
-                if (randomNum == checkNum) {
-                    if (randomNum == 2) {
-                        randomNum -= 1;
-                    } else {
-                        randomNum += 1;
-                    }
-
-                }
-                checkNum = randomNum;
-                currentWord = exampleWords[randomNum];
-                wordOfTheDay.setText(currentWord);
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,DisplayMeaning.class);
+                intent.putExtra("word",wordOfTheDay.getText().toString());
+                intent.putExtra("switch_check",0);
+                startActivity(intent);
             }
-        };
-        timer.schedule(timerTask, 0, 10000);
+        });
         wordSearch = findViewById(R.id.imageView2);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -110,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+        //Setting a listener on the search bar to launch the SearchActivity
         wordSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +130,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent.putStringArrayListExtra("english_meanings", englishMeanings);
                 intent.putStringArrayListExtra("english_words", englishWords);
                 intent.putStringArrayListExtra("khasi_meanings", khasiMeanings);
+                //Passing the state of the switch to decide which version the user
+                //has selected i.e., khasi to english or english to khasi
                 intent.putExtra("switch_check",checkSwitch);
+
+                //Log statements for debugging purposes
                 Log.i(TAG, "Size of Khasi words in MainActivity: " + khasiWords.size());
                 Log.i(TAG, "Size of englishMeanings in MainActivity: " + englishMeanings.size());
                 Log.i(TAG, "First Khasi word in MainActivity " + khasiWords.get(0));
@@ -173,6 +189,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void setAlarm() {
+        //Getting an instance of our shared preference prefs
+        SharedPreferences sharedPreferences = getSharedPreferences("prefs",0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //Setting firstStart to false to indicate that the first app launch is over
+        editor.putBoolean("firstStart",false);
+        editor.apply();
+        //Getting an instance of Calender Utility Class
+        Calendar calendar = Calendar.getInstance();
+
+        //Setting the time to 12 midnight. Alarm will fire at 12 A.M everyday
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        //Creating an intent to the Broadcast Receiver Class
+        Intent intent = new Intent(this,MyReceiver.class);
+        //Passing the size of the khasiWords ArrayList to the Broadcast Receiver
+        intent.putExtra("size",khasiWords.size());
+
+        //Creating a pending intent. This will fire everyday at 12 A.M
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent,0);
+        //Setting the Alarm to fire everyday
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+    }
 
     /*
 
@@ -268,4 +310,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
+    public static class MyReceiver extends BroadcastReceiver {
+        //The Broadcast Receiver class
+        public MyReceiver () {}
+
+        private static final String TAG = "MyReceiver";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //This method will be called every time the alarm fires
+            Random r = new Random();
+            //Getting the size of the khasiWords ArrayList passed with the intent
+            int size = intent.getIntExtra("size",0);
+            Log.d(TAG, "onReceive: " + size);
+            //Generating a random number within the size of the khasiWords ArrayList
+            int randomNum = r.nextInt(size);
+
+            //Getting an instance of our shared preference prefs
+            SharedPreferences sharedPreferences = context.getSharedPreferences("prefs",0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //Writing this random number to the shared preference
+            editor.putInt("wordIndex",randomNum);
+            editor.apply();
+            Log.d(TAG, "onReceive: ");
+        }
+    }
+
+
 }
