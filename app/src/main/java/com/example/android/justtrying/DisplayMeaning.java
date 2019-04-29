@@ -29,7 +29,6 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
     String englishMeaning;
     String khasiMeaning;
     String word;
-    //String khasiWord;
     private int stateFavButton = 0;
     private static int checkButStatus = 0;
     private ArrayList<String> items;
@@ -116,8 +115,10 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
                 });
 
 
+        //onClickListener to handle clicked events
         mBut.setOnClickListener(this);
 
+        //A listener to handle the floating action button click event that fires up the share menu
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,11 +134,16 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+        /*
+            The status of the current word being searched from the file of favourite words to maintain the state of the button
+         */
+
         checkButStatus = checkDb(textViewWord.getText().toString());
 
-        if(checkButStatus == 1)
+        if(checkButStatus == 1) //if word is a favourite
         {
             mBut.setColorFilter(getResources().getColor(R.color.favSelected));
+            //variable to handle click functions
             stateFavButton = 1;
         }
 
@@ -152,16 +158,21 @@ public class DisplayMeaning extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         String word = textViewWord.getText().toString();
 
+        /*
+            Condition to add favourite by calling class FileHelperFavourite and changing the colour of the button
+         */
         if (stateFavButton == 0 ) {
             stateFavButton = 1;
             mBut.setColorFilter(getResources().getColor(R.color.favSelected));
             Toast.makeText(DisplayMeaning.this, "Word added to Favourites!", Toast.LENGTH_SHORT).show();
             FileHelperFavourite.writeDataFav(word, this);
-        } else {
+        }
+        /*
+            Condition to remove a word from favourites
+         */
+        else {
             stateFavButton = 0;
             mBut.setColorFilter(getResources().getColor(R.color.colorText));
-            //mBut.setEnabled(false);
-            //FileHelperFavourite.flushEverything(this);
             Toast.makeText(DisplayMeaning.this, "Word Removed from Favourites!", Toast.LENGTH_SHORT).show();
             FileHelperFavourite.removeData(word,this);
         }

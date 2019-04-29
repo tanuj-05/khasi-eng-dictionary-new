@@ -7,9 +7,12 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+/*
+    Class to populate the Activity for Favourites
+
+ */
+
 public class FavActivity extends AppCompatActivity {
-
-
 
     private ArrayList<String> items;
 
@@ -18,6 +21,7 @@ public class FavActivity extends AppCompatActivity {
     private ListView listView;
 
     private String item;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,10 +29,13 @@ public class FavActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.listforFav);
 
+        //we store the file contents in the array list
         items = FileHelperFavourite.readDataFav(this);
 
+        // we pass the list of item to the array adapter
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,items);
 
+        // we display data to inside the listview
         listView.setAdapter(adapter);
 
     }

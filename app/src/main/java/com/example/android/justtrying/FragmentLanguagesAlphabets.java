@@ -24,6 +24,8 @@ public class FragmentLanguagesAlphabets extends Fragment {
     private TextToSpeech textToSpeech;
     private GridLayout gridLayout;
 
+    //use of an inflater to take the layout file and pass an object to the calling fragment
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_language_alphabets, container, false);
@@ -33,6 +35,8 @@ public class FragmentLanguagesAlphabets extends Fragment {
 
         return rootView;
     }
+
+    // to set up text to speech
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -53,14 +57,7 @@ public class FragmentLanguagesAlphabets extends Fragment {
 
     }
 
-
-    //    @Override
-//    public void onInit(int i) {
-//        if (i != TextToSpeech.ERROR) {
-//            textToSpeech.setLanguage(new Locale("UK"));
-//        }
-//    }
-
+    //used to relieve the resources taken up by TTS
     @Override
     public void onDestroy() {
         if(textToSpeech !=null){
@@ -72,17 +69,17 @@ public class FragmentLanguagesAlphabets extends Fragment {
 
 
     private void setSingleEvent(GridLayout gridLayout) {
+
+        //loop through all the children of the grid layout
         for(int i = 0; i<gridLayout.getChildCount();i++){
             final CardView cardView=(CardView)gridLayout.getChildAt(i);
 
             final int finalI= i;
-            //Log.i(TAG, "setSingleEvent: ");
+
+            //listener to handle child click events and fire up TTS
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    //Toast.makeText(getContext().getApplicationContext(),"Hi " +finalI,Toast.LENGTH_LONG).show();
-
 
                     switch(finalI) {
 

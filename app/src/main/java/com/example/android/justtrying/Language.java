@@ -26,9 +26,6 @@ public class Language extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -56,12 +53,7 @@ public class Language extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -78,17 +70,15 @@ public class Language extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
 
+            //used to enable switching between tabs by returning an object of the fragment class
             switch(position) {
 
                 case 0:
                     FragmentLanguagesAlphabets tab1 = new FragmentLanguagesAlphabets();
                     return tab1;
-                    //break;
-
                 case 1:
                     FragmentLanguagesAbout tab2 = new FragmentLanguagesAbout();
                     return tab2;
-                    //break;
 
                 default:
                     return null;

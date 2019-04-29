@@ -22,6 +22,7 @@ import static android.support.constraint.Constraints.TAG;
 
 public class FileHelperFavourite {
 
+    //definition of the file names used to stopre the information
     private static final String FILENAME = "favinfo.dat";
     private static final String FILENAME2 = "recentsinfo.dat";
 
@@ -183,10 +184,8 @@ public class FileHelperFavourite {
                     Log.e(TAG, "removeData: inside check condition ");
                     sb.delete(0,sb.length());
                     passText = null;
-                    //Toast.makeText(context, "FOUND!", Toast.LENGTH_SHORT).show();
                     continue;
                 }
-                //sb.append(text).append("\n");
                 if(passText == null)
                     continue;
                 else
